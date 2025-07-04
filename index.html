@@ -38,6 +38,84 @@
             --current-day-text: #0d1b2a;
         }
 
+        /* Planetary Themes */
+        .theme-saturn {
+            --primary-bg: #2c2c54;
+            --secondary-bg: #40407a;
+            --text-color: #f1f2f6;
+            --accent-color: #706fd3;
+            --border-color: #57606f;
+            --highlight-bg: #3c4142;
+            --current-day-bg: #ff6348;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-jupiter {
+            --primary-bg: #1e3c72;
+            --secondary-bg: #2a5298;
+            --text-color: #ffffff;
+            --accent-color: #f39c12;
+            --border-color: #34495e;
+            --highlight-bg: #2c3e50;
+            --current-day-bg: #e74c3c;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-mars {
+            --primary-bg: #8b0000;
+            --secondary-bg: #a0522d;
+            --text-color: #fff8dc;
+            --accent-color: #ff6347;
+            --border-color: #cd853f;
+            --highlight-bg: #800000;
+            --current-day-bg: #ffd700;
+            --current-day-text: #8b0000;
+        }
+
+        .theme-sun {
+            --primary-bg: #ff8c00;
+            --secondary-bg: #ffa500;
+            --text-color: #000000;
+            --accent-color: #ff4500;
+            --border-color: #ff6347;
+            --highlight-bg: #ffb347;
+            --current-day-bg: #1e90ff;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-venus {
+            --primary-bg: #ff69b4;
+            --secondary-bg: #ff1493;
+            --text-color: #ffffff;
+            --accent-color: #00ced1;
+            --border-color: #da70d6;
+            --highlight-bg: #db7093;
+            --current-day-bg: #32cd32;
+            --current-day-text: #000000;
+        }
+
+        .theme-mercury {
+            --primary-bg: #c0c0c0;
+            --secondary-bg: #a9a9a9;
+            --text-color: #000000;
+            --accent-color: #4169e1;
+            --border-color: #696969;
+            --highlight-bg: #dcdcdc;
+            --current-day-bg: #ff4500;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-moon {
+            --primary-bg: #191970;
+            --secondary-bg: #483d8b;
+            --text-color: #e6e6fa;
+            --accent-color: #9370db;
+            --border-color: #6a5acd;
+            --highlight-bg: #2f2f4f;
+            --current-day-bg: #ffd700;
+            --current-day-text: #000000;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -169,6 +247,13 @@
         .theme-btn.dark { background-color: #1a1a1a; }
         .theme-btn.blue { background-color: #1a1a2e; }
         .theme-btn.green { background-color: #0d1b2a; }
+        .theme-btn.saturn { background-color: #2c2c54; }
+        .theme-btn.jupiter { background-color: #1e3c72; }
+        .theme-btn.mars { background-color: #8b0000; }
+        .theme-btn.sun { background-color: #ff8c00; }
+        .theme-btn.venus { background-color: #ff69b4; }
+        .theme-btn.mercury { background-color: #c0c0c0; }
+        .theme-btn.moon { background-color: #191970; }
 
         .theme-btn:hover {
             transform: scale(1.1);
@@ -263,6 +348,141 @@
             background-color: var(--highlight-bg);
             font-weight: bold;
             color: var(--accent-color);
+        }
+
+        /* Widget Mode Styles */
+        .widget-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 280px;
+            background-color: var(--secondary-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .widget-container.show {
+            display: block;
+        }
+
+        .widget-header {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .widget-current-hour {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--primary-bg);
+            border-radius: 10px;
+            border: 2px solid var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .widget-planet-symbol {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .widget-planet-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .widget-time-range {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .widget-period {
+            font-size: 0.8rem;
+            background-color: var(--highlight-bg);
+            padding: 3px 8px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .widget-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .widget-btn {
+            padding: 8px 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .widget-btn:hover {
+            background-color: var(--highlight-bg);
+        }
+
+        .widget-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            z-index: 1001;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .widget-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .planetary-theme-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .planetary-theme-btn {
+            width: 35px;
+            height: 35px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            position: relative;
+        }
+
+        .planetary-theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .planetary-theme-btn.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
         }
 
         @media (max-width: 768px) {
@@ -368,6 +588,8 @@
             
             <button class="btn" id="calculate-btn" onclick="calculateTimes()">حساب الأوقات</button>
             
+            <button class="btn" id="auto-location-btn" onclick="getLocationAndTimes()" style="background-color: var(--highlight-bg);">📍 الموقع التلقائي</button>
+            
             <div class="language-toggle">
                 <button id="lang-ar" class="active" onclick="setLanguage('ar')">العربية</button>
                 <button id="lang-en" onclick="setLanguage('en')">English</button>
@@ -377,6 +599,16 @@
                 <div class="theme-btn dark active" onclick="setTheme('dark')" title="Dark Theme"></div>
                 <div class="theme-btn blue" onclick="setTheme('blue')" title="Blue Theme"></div>
                 <div class="theme-btn green" onclick="setTheme('green')" title="Green Theme"></div>
+            </div>
+            
+            <div class="planetary-theme-selector">
+                <div class="planetary-theme-btn saturn" onclick="setTheme('saturn')" title="Saturn ♄">♄</div>
+                <div class="planetary-theme-btn jupiter" onclick="setTheme('jupiter')" title="Jupiter ♃">♃</div>
+                <div class="planetary-theme-btn mars" onclick="setTheme('mars')" title="Mars ♂">♂</div>
+                <div class="planetary-theme-btn sun" onclick="setTheme('sun')" title="Sun ☀">☀</div>
+                <div class="planetary-theme-btn venus" onclick="setTheme('venus')" title="Venus ♀">♀</div>
+                <div class="planetary-theme-btn mercury" onclick="setTheme('mercury')" title="Mercury ☿">☿</div>
+                <div class="planetary-theme-btn moon" onclick="setTheme('moon')" title="Moon 🌙">🌙</div>
             </div>
         </div>
 
@@ -427,6 +659,24 @@
         </div>
     </div>
 
+    <!-- Widget Toggle Button -->
+    <button class="widget-toggle" id="widget-toggle" onclick="toggleWidget()">🕐</button>
+
+    <!-- Planetary Hour Widget -->
+    <div class="widget-container" id="planetary-widget">
+        <div class="widget-header" id="widget-header">Current Planetary Hour</div>
+        <div class="widget-current-hour" id="widget-content">
+            <div class="widget-planet-symbol" id="widget-symbol">⏳</div>
+            <div class="widget-planet-name" id="widget-planet">Calculating...</div>
+            <div class="widget-time-range" id="widget-time">Please set times first</div>
+            <div class="widget-period" id="widget-period">...</div>
+        </div>
+        <div class="widget-controls">
+            <button class="widget-btn" onclick="updateWidget()" id="widget-refresh">🔄 Refresh</button>
+            <button class="widget-btn" onclick="toggleWidget()" id="widget-close">✕ Close</button>
+        </div>
+    </div>
+
     <script>
         // Planet data
         const planets = [
@@ -459,6 +709,14 @@
                 sunset: 'وقت الغروب:',
                 currentHour: 'الساعة الحالية:',
                 calculate: 'حساب الأوقات',
+                autoLocation: '📍 الموقع التلقائي',
+                widgetHeader: 'الساعة الكوكبية الحالية',
+                calculating: 'جاري الحساب...',
+                setTimesFirst: 'يرجى تعيين الأوقات أولاً',
+                refresh: '🔄 تحديث',
+                close: '✕ إغلاق',
+                daytime: 'نهاري',
+                nighttime: 'ليلي',
                 dayHours: 'الأوقات النهارية',
                 nightHours: 'الأوقات الليلية',
                 hour: 'الساعة',
@@ -471,6 +729,14 @@
                 sunset: 'Sunset Time:',
                 currentHour: 'Current Hour:',
                 calculate: 'Calculate Times',
+                autoLocation: '📍 Auto Location',
+                widgetHeader: 'Current Planetary Hour',
+                calculating: 'Calculating...',
+                setTimesFirst: 'Please set times first',
+                refresh: '🔄 Refresh',
+                close: '✕ Close',
+                daytime: 'Daytime',
+                nighttime: 'Nighttime',
                 dayHours: 'Daytime Hours',
                 nightHours: 'Nighttime Hours',
                 hour: 'Hour',
@@ -541,6 +807,10 @@
             document.getElementById('sunset-label').textContent = translations[lang].sunset;
             document.getElementById('current-hour-label').textContent = translations[lang].currentHour;
             document.getElementById('calculate-btn').textContent = translations[lang].calculate;
+            document.getElementById('auto-location-btn').textContent = translations[lang].autoLocation;
+            
+            // Update widget translations
+            updateWidgetTranslations();
             document.getElementById('day-hours-title').textContent = translations[lang].dayHours;
             document.getElementById('night-hours-title').textContent = translations[lang].nightHours;
             document.getElementById('hour-header').textContent = translations[lang].hour;
@@ -575,18 +845,30 @@
             const body = document.body;
             
             // Remove all theme classes
-            body.classList.remove('theme-blue', 'theme-green');
+            body.classList.remove('theme-blue', 'theme-green', 'theme-saturn', 'theme-jupiter', 'theme-mars', 'theme-sun', 'theme-venus', 'theme-mercury', 'theme-moon');
             
             // Add new theme class
             if (theme !== 'dark') {
                 body.classList.add('theme-' + theme);
             }
 
-            // Update theme toggle
+            // Update theme toggle for basic themes
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`.theme-btn.${theme}`).classList.add('active');
+            const basicTheme = document.querySelector(`.theme-btn.${theme}`);
+            if (basicTheme) {
+                basicTheme.classList.add('active');
+            }
+
+            // Update planetary theme toggle
+            document.querySelectorAll('.planetary-theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const planetaryTheme = document.querySelector(`.planetary-theme-btn.${theme}`);
+            if (planetaryTheme) {
+                planetaryTheme.classList.add('active');
+            }
         }
 
         // Highlight current day - FIXED VERSION
@@ -664,6 +946,9 @@
             
             // Highlight current hour if set
             highlightCurrentHour();
+            
+            // Update widget
+            updateWidget();
         }
 
         // Parse time string to minutes
@@ -742,6 +1027,193 @@
             }
         }
 
+        // Fetch sunrise/sunset times from API
+        async function fetchSunriseSunset(latitude, longitude) {
+            const apiUrl = `https://api.sunrisesunset.io/json?lat=${latitude}&lng=${longitude}&time_format=24`;
+            
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('Failed to fetch sunrise/sunset data');
+            }
+            
+            const data = await response.json();
+            if (data.status !== 'OK') {
+                throw new Error('Invalid response from sunrise/sunset API');
+            }
+            
+            return {
+                sunrise: data.results.sunrise,
+                sunset: data.results.sunset
+            };
+        }
+
+        // Get current position using geolocation API
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by this browser.'));
+                    return;
+                }
+                
+                navigator.geolocation.getCurrentPosition(
+                    resolve,
+                    reject,
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 600000 // 10 minutes cache
+                    }
+                );
+            });
+        }
+
+        // Get user location and auto-fill sunrise/sunset times
+        async function getLocationAndTimes() {
+            const autoBtn = document.getElementById('auto-location-btn');
+            const originalText = autoBtn.textContent;
+            
+            try {
+                // Update button to show loading
+                autoBtn.textContent = currentLanguage === 'ar' ? '⏳ جاري التحديد...' : '⏳ Getting location...';
+                autoBtn.disabled = true;
+                
+                // Get user's coordinates using geolocation
+                const position = await getCurrentPosition();
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                
+                // Update button to show fetching times
+                autoBtn.textContent = currentLanguage === 'ar' ? '🌅 جاري الحصول على الأوقات...' : '🌅 Fetching times...';
+                
+                // Fetch sunrise/sunset times from API
+                const sunData = await fetchSunriseSunset(latitude, longitude);
+                
+                // Update the input fields with the fetched times
+                document.getElementById('sunrise').value = sunData.sunrise;
+                document.getElementById('sunset').value = sunData.sunset;
+                
+                // Auto-calculate times
+                calculateTimes();
+                
+                // Show success message
+                autoBtn.textContent = currentLanguage === 'ar' ? '✅ تم بنجاح' : '✅ Success';
+                setTimeout(() => {
+                    autoBtn.textContent = originalText;
+                    autoBtn.disabled = false;
+                }, 2000);
+                
+            } catch (error) {
+                // Show error message
+                autoBtn.textContent = currentLanguage === 'ar' ? '❌ خطأ' : '❌ Error';
+                setTimeout(() => {
+                    autoBtn.textContent = originalText;
+                    autoBtn.disabled = false;
+                }, 2000);
+                
+                const errorMsg = currentLanguage === 'ar' 
+                    ? 'لا يمكن الحصول على الموقع أو أوقات الشروق والغروب. يرجى التحقق من إعدادات الموقع أو إدخال الأوقات يدوياً.'
+                    : 'Unable to get location or sunrise/sunset times. Please check location settings or enter times manually.';
+                alert(errorMsg);
+            }
+        }
+
+        // Widget functionality
+        function toggleWidget() {
+            const widget = document.getElementById('planetary-widget');
+            const toggle = document.getElementById('widget-toggle');
+            
+            if (widget.classList.contains('show')) {
+                widget.classList.remove('show');
+                toggle.style.display = 'block';
+            } else {
+                widget.classList.add('show');
+                toggle.style.display = 'none';
+                updateWidget();
+            }
+        }
+
+        function updateWidget() {
+            const sunriseInput = document.getElementById('sunrise').value;
+            const sunsetInput = document.getElementById('sunset').value;
+            const currentHourInput = document.getElementById('current-hour').value;
+            
+            if (!sunriseInput || !sunsetInput || !currentHourInput) {
+                document.getElementById('widget-symbol').textContent = '⏳';
+                document.getElementById('widget-planet').textContent = translations[currentLanguage].calculating;
+                document.getElementById('widget-time').textContent = translations[currentLanguage].setTimesFirst;
+                document.getElementById('widget-period').textContent = '...';
+                return;
+            }
+            
+            const currentTime = parseTime(currentHourInput);
+            const sunrise = parseTime(sunriseInput);
+            const sunset = parseTime(sunsetInput);
+            
+            const today = new Date().getDay();
+            let dayIndex;
+            switch(today) {
+                case 0: dayIndex = 1; break; // Sunday
+                case 1: dayIndex = 2; break; // Monday
+                case 2: dayIndex = 3; break; // Tuesday
+                case 3: dayIndex = 4; break; // Wednesday
+                case 4: dayIndex = 5; break; // Thursday
+                case 5: dayIndex = 6; break; // Friday
+                case 6: dayIndex = 0; break; // Saturday
+            }
+            
+            let isDaytime, hourIndex, startTime, duration;
+            
+            if (currentTime >= sunrise && currentTime < sunset) {
+                // Daytime hour
+                isDaytime = true;
+                duration = (sunset - sunrise) / 12;
+                hourIndex = Math.floor((currentTime - sunrise) / duration);
+                hourIndex = Math.min(hourIndex, 11);
+                startTime = sunrise + (hourIndex * duration);
+            } else {
+                // Nighttime hour
+                isDaytime = false;
+                duration = (24 * 60 - (sunset - sunrise)) / 12;
+                let timeFromSunset;
+                
+                if (currentTime >= sunset) {
+                    timeFromSunset = currentTime - sunset;
+                } else {
+                    timeFromSunset = (24 * 60 - sunset) + currentTime;
+                }
+                
+                hourIndex = Math.floor(timeFromSunset / duration);
+                hourIndex = Math.min(hourIndex, 11);
+                startTime = sunset + (hourIndex * duration);
+            }
+            
+            // Calculate planet
+            const baseIndex = dayRulers[dayIndex];
+            let planetIndex;
+            
+            if (isDaytime) {
+                planetIndex = (baseIndex + hourIndex) % 7;
+            } else {
+                planetIndex = (baseIndex + 12 + hourIndex) % 7;
+            }
+            
+            const planet = planets[planetIndex];
+            const endTime = startTime + duration;
+            
+            // Update widget content
+            document.getElementById('widget-symbol').textContent = planet.symbol;
+            document.getElementById('widget-planet').textContent = currentLanguage === 'ar' ? planet.name : planet.nameEn;
+            document.getElementById('widget-time').textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+            document.getElementById('widget-period').textContent = isDaytime ? translations[currentLanguage].daytime : translations[currentLanguage].nighttime;
+        }
+
+        function updateWidgetTranslations() {
+            document.getElementById('widget-header').textContent = translations[currentLanguage].widgetHeader;
+            document.getElementById('widget-refresh').textContent = translations[currentLanguage].refresh;
+            document.getElementById('widget-close').textContent = translations[currentLanguage].close;
+            updateWidget();
+        }
+
         // Highlight current planetary hour
         function highlightCurrentHour() {
             const currentHourInput = document.getElementById('current-hour').value;
@@ -811,7 +1283,15 @@
         }
 
         // Initialize the app when page loads
-        window.addEventListener('load', init);
+        window.addEventListener('load', function() {
+            init();
+            
+            // Add event listener for current hour input
+            const currentHourInput = document.getElementById('current-hour');
+            if (currentHourInput) {
+                currentHourInput.addEventListener('change', highlightCurrentHour);
+            }
+        });
     </script>
 </body>
 </html>
