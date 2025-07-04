@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة الأوقات الكوكبية - Planetary Hours Calculator</title>
+    <style>
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --text-color: #ffffff;
+            --accent-color: #4a90e2;
+            --border-color: #444;
+            --highlight-bg: #3a3a3a;
+            --current-day-bg: #ff6b35;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-blue {
+            --primary-bg: #1a1a2e;
+            --secondary-bg: #16213e;
+            --text-color: #eee;
+            --accent-color: #0f4c75;
+            --border-color: #3282b8;
+            --highlight-bg: #0f3460;
+            --current-day-bg: #e76f51;
+            --current-day-text: #ffffff;
+        }
+
+        .theme-green {
+            --primary-bg: #0d1b2a;
+            --secondary-bg: #1b263b;
+            --text-color: #e0e1dd;
+            --accent-color: #2a9d8f;
+            --border-color: #264653;
+            --highlight-bg: #415a77;
+            --current-day-bg: #f4a261;
+            --current-day-text: #0d1b2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .input-group input {
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--highlight-bg);
+            transform: translateY(-2px);
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .language-toggle button {
+            padding: 8px 16px;
+            background-color: var(--highlight-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .language-toggle button.active {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn.dark { background-color: #1a1a1a; }
+        .theme-btn.blue { background-color: #1a1a2e; }
+        .theme-btn.green { background-color: #0d1b2a; }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-btn.active {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .table-section {
+            background-color: var(--secondary-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            font-size: 1.8rem;
+        }
+
+        .planetary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .planetary-table th,
+        .planetary-table td {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .planetary-table th {
+            background-color: var(--highlight-bg);
+            color: var(--text-color);
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .planetary-table td {
+            background-color: var(--primary-bg);
+        }
+
+        .current-day {
+            background-color: var(--current-day-bg) !important;
+            color: var(--current-day-text) !important;
+        }
+
+        .current-hour {
+            background-color: rgba(255, 193, 7, 0.3) !important;
+            border: 2px solid #ffc107 !important;
+            box-shadow: 0 0 8px rgba(255, 193, 7, 0.5) !important;
+        }
+
+        .planet-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .planet-symbol {
+            font-size: 1.2rem;
+        }
+
+        .planet-name {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .hour-time {
+            font-size: 0.75rem;
+            color: var(--accent-color);
+        }
+
+        .hour-number {
+            background-color: var(--highlight-bg);
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .planetary-table {
+                font-size: 0.8rem;
+            }
+
+            .planetary-table th,
+            .planetary-table td {
+                padding: 6px;
+            }
+
+            .planet-symbol {
+                font-size: 1rem;
+            }
+
+            .planet-name {
+                font-size: 0.7rem;
+            }
+
+            .hour-time {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .planetary-table {
+                font-size: 0.7rem;
+            }
+
+            .planetary-table th,
+            .planetary-table td {
+                padding: 4px;
+            }
+
+            .planet-symbol {
+                font-size: 0.9rem;
+            }
+
+            .planet-name {
+                font-size: 0.6rem;
+            }
+
+            .hour-time {
+                font-size: 0.6rem;
+            }
+        }
+
+        /* RTL/LTR specific styles */
+        body[dir="rtl"] .controls {
+            direction: rtl;
+        }
+
+        body[dir="ltr"] .controls {
+            direction: ltr;
+        }
+
+        body[dir="ltr"] {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body[dir="rtl"] {
+            font-family: 'Segoe UI', 'Arabic UI Text', Tahoma, Geneva, sans-serif;
+        }
+    </style>
+</head>
+<body dir="rtl">
+    <div class="container">
+        <div class="header">
+            <h1 id="main-title">حاسبة الأوقات الكوكبية</h1>
+            <p id="subtitle">احسب الأوقات الكوكبية بناءً على أوقات الشروق والغروب</p>
+            <div id="current-date" style="margin-top: 15px; font-size: 1.1rem; color: var(--accent-color); font-weight: bold;"></div>
+        </div>
+
+        <div class="controls">
+            <div class="input-group">
+                <label for="sunrise" id="sunrise-label">وقت الشروق:</label>
+                <input type="time" id="sunrise" value="06:00">
+            </div>
+            
+            <div class="input-group">
+                <label for="sunset" id="sunset-label">وقت الغروب:</label>
+                <input type="time" id="sunset" value="18:00">
+            </div>
+            
+            <div class="input-group">
+                <label for="current-hour" id="current-hour-label">الساعة الحالية:</label>
+                <input type="time" id="current-hour">
+            </div>
+            
+            <button class="btn" id="calculate-btn" onclick="calculateTimes()">حساب الأوقات</button>
+            
+            <div class="language-toggle">
+                <button id="lang-ar" class="active" onclick="setLanguage('ar')">العربية</button>
+                <button id="lang-en" onclick="setLanguage('en')">English</button>
+            </div>
+            
+            <div class="theme-selector">
+                <div class="theme-btn dark active" onclick="setTheme('dark')" title="Dark Theme"></div>
+                <div class="theme-btn blue" onclick="setTheme('blue')" title="Blue Theme"></div>
+                <div class="theme-btn green" onclick="setTheme('green')" title="Green Theme"></div>
+            </div>
+        </div>
+
+        <div class="tables-container">
+            <div class="table-section">
+                <h2 id="day-hours-title">الأوقات النهارية</h2>
+                <div class="table-container">
+                    <table class="planetary-table" id="day-table">
+                        <thead>
+                            <tr>
+                                <th id="hour-header">الساعة</th>
+                                <th class="day-header">السبت</th>
+                                <th class="day-header">الأحد</th>
+                                <th class="day-header">الاثنين</th>
+                                <th class="day-header">الثلاثاء</th>
+                                <th class="day-header">الأربعاء</th>
+                                <th class="day-header">الخميس</th>
+                                <th class="day-header">الجمعة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="day-hours-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <h2 id="night-hours-title">الأوقات الليلية</h2>
+                <div class="table-container">
+                    <table class="planetary-table" id="night-table">
+                        <thead>
+                            <tr>
+                                <th id="night-hour-header">الساعة</th>
+                                <th class="night-day-header">السبت</th>
+                                <th class="night-day-header">الأحد</th>
+                                <th class="night-day-header">الاثنين</th>
+                                <th class="night-day-header">الثلاثاء</th>
+                                <th class="night-day-header">الأربعاء</th>
+                                <th class="night-day-header">الخميس</th>
+                                <th class="night-day-header">الجمعة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="night-hours-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Planet data
+        const planets = [
+            { name: 'زحل', symbol: '♄', nameEn: 'Saturn' },
+            { name: 'المشتري', symbol: '♃', nameEn: 'Jupiter' },
+            { name: 'المريخ', symbol: '♂', nameEn: 'Mars' },
+            { name: 'الشمس', symbol: '☀', nameEn: 'Sun' },
+            { name: 'الزهرة', symbol: '♀', nameEn: 'Venus' },
+            { name: 'عطارد', symbol: '☿', nameEn: 'Mercury' },
+            { name: 'القمر', symbol: '🌙', nameEn: 'Moon' }
+        ];
+
+        // Day rulers (first hour of each day)
+        const dayRulers = {
+            0: 0, // Saturday - Saturn
+            1: 3, // Sunday - Sun
+            2: 6, // Monday - Moon
+            3: 2, // Tuesday - Mars
+            4: 5, // Wednesday - Mercury
+            5: 1, // Thursday - Jupiter
+            6: 4  // Friday - Venus
+        };
+
+        // Language translations
+        const translations = {
+            ar: {
+                title: 'حاسبة الأوقات الكوكبية',
+                subtitle: 'احسب الأوقات الكوكبية بناءً على أوقات الشروق والغروب',
+                sunrise: 'وقت الشروق:',
+                sunset: 'وقت الغروب:',
+                currentHour: 'الساعة الحالية:',
+                calculate: 'حساب الأوقات',
+                dayHours: 'الأوقات النهارية',
+                nightHours: 'الأوقات الليلية',
+                hour: 'الساعة',
+                days: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة']
+            },
+            en: {
+                title: 'Planetary Hours Calculator',
+                subtitle: 'Calculate planetary hours based on sunrise and sunset times',
+                sunrise: 'Sunrise Time:',
+                sunset: 'Sunset Time:',
+                currentHour: 'Current Hour:',
+                calculate: 'Calculate Times',
+                dayHours: 'Daytime Hours',
+                nightHours: 'Nighttime Hours',
+                hour: 'Hour',
+                days: ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+            }
+        };
+
+        let currentLanguage = 'ar';
+        let currentTheme = 'dark';
+
+        // Initialize the app
+        function init() {
+            updateCurrentDate();
+            setCurrentTime();
+            highlightCurrentDay();
+            calculateTimes();
+        }
+
+        // Set current time in the input field
+        function setCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('current-hour').value = `${hours}:${minutes}`;
+        }
+
+        // Update current date display
+        function updateCurrentDate() {
+            const now = new Date();
+            const gregorianOptions = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            let gregorianDate;
+            if (currentLanguage === 'ar') {
+                gregorianDate = now.toLocaleDateString('ar-SA', gregorianOptions);
+            } else {
+                gregorianDate = now.toLocaleDateString('en-US', gregorianOptions);
+            }
+            
+            // Show only Gregorian date
+            document.getElementById('current-date').innerHTML = gregorianDate;
+        }
+
+        // Set language
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const body = document.body;
+            const html = document.documentElement;
+            
+            if (lang === 'ar') {
+                body.setAttribute('dir', 'rtl');
+                html.setAttribute('dir', 'rtl');
+                html.setAttribute('lang', 'ar');
+            } else {
+                body.setAttribute('dir', 'ltr');
+                html.setAttribute('dir', 'ltr');
+                html.setAttribute('lang', 'en');
+            }
+
+            // Update UI text
+            document.getElementById('main-title').textContent = translations[lang].title;
+            document.getElementById('subtitle').textContent = translations[lang].subtitle;
+            document.getElementById('sunrise-label').textContent = translations[lang].sunrise;
+            document.getElementById('sunset-label').textContent = translations[lang].sunset;
+            document.getElementById('current-hour-label').textContent = translations[lang].currentHour;
+            document.getElementById('calculate-btn').textContent = translations[lang].calculate;
+            document.getElementById('day-hours-title').textContent = translations[lang].dayHours;
+            document.getElementById('night-hours-title').textContent = translations[lang].nightHours;
+            document.getElementById('hour-header').textContent = translations[lang].hour;
+            document.getElementById('night-hour-header').textContent = translations[lang].hour;
+
+            // Update day headers
+            const dayHeaders = document.querySelectorAll('.day-header');
+            const nightDayHeaders = document.querySelectorAll('.night-day-header');
+            
+            dayHeaders.forEach((header, index) => {
+                header.textContent = translations[lang].days[index];
+            });
+            
+            nightDayHeaders.forEach((header, index) => {
+                header.textContent = translations[lang].days[index];
+            });
+
+            // Update language toggle
+            document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+
+            // Update current date
+            updateCurrentDate();
+
+            // Recalculate to update planet names
+            calculateTimes();
+        }
+
+        // Set theme
+        function setTheme(theme) {
+            currentTheme = theme;
+            const body = document.body;
+            
+            // Remove all theme classes
+            body.classList.remove('theme-blue', 'theme-green');
+            
+            // Add new theme class
+            if (theme !== 'dark') {
+                body.classList.add('theme-' + theme);
+            }
+
+            // Update theme toggle
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.theme-btn.${theme}`).classList.add('active');
+        }
+
+        // Highlight current day - FIXED VERSION
+        function highlightCurrentDay() {
+            const today = new Date().getDay();
+            
+            // Convert JavaScript day (0=Sunday, 1=Monday, etc.) to our table column index
+            // Our table order: السبت(0), الأحد(1), الاثنين(2), الثلاثاء(3), الأربعاء(4), الخميس(5), الجمعة(6)
+            let dayIndex;
+            switch(today) {
+                case 0: dayIndex = 1; break; // Sunday -> الأحد (index 1)
+                case 1: dayIndex = 2; break; // Monday -> الاثنين (index 2)
+                case 2: dayIndex = 3; break; // Tuesday -> الثلاثاء (index 3)
+                case 3: dayIndex = 4; break; // Wednesday -> الأربعاء (index 4)
+                case 4: dayIndex = 5; break; // Thursday -> الخميس (index 5)
+                case 5: dayIndex = 6; break; // Friday -> الجمعة (index 6)
+                case 6: dayIndex = 0; break; // Saturday -> السبت (index 0)
+            }
+            
+            // Remove previous highlights
+            document.querySelectorAll('.current-day').forEach(cell => {
+                cell.classList.remove('current-day');
+            });
+
+            // Add current day highlight to headers
+            const dayHeaders = document.querySelectorAll('.day-header');
+            const nightDayHeaders = document.querySelectorAll('.night-day-header');
+            
+            if (dayHeaders[dayIndex]) {
+                dayHeaders[dayIndex].classList.add('current-day');
+            }
+            if (nightDayHeaders[dayIndex]) {
+                nightDayHeaders[dayIndex].classList.add('current-day');
+            }
+
+            // Highlight corresponding columns in both tables
+            const dayTable = document.getElementById('day-table');
+            const nightTable = document.getElementById('night-table');
+            
+            [dayTable, nightTable].forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    // dayIndex + 1 because first column is hour number
+                    if (cells[dayIndex + 1]) {
+                        cells[dayIndex + 1].classList.add('current-day');
+                    }
+                });
+            });
+        }
+
+        // Calculate planetary hours
+        function calculateTimes() {
+            const sunriseInput = document.getElementById('sunrise').value;
+            const sunsetInput = document.getElementById('sunset').value;
+
+            if (!sunriseInput || !sunsetInput) {
+                alert(currentLanguage === 'ar' ? 'يرجى إدخال أوقات الشروق والغروب' : 'Please enter sunrise and sunset times');
+                return;
+            }
+
+            const sunrise = parseTime(sunriseInput);
+            const sunset = parseTime(sunsetInput);
+
+            // Calculate day and night durations
+            const dayDuration = (sunset - sunrise) / 12; // 12 daytime hours
+            const nightDuration = (24 * 60 - (sunset - sunrise)) / 12; // 12 nighttime hours
+
+            // Generate tables
+            generateHoursTable('day-hours-body', sunrise, dayDuration, true);
+            generateHoursTable('night-hours-body', sunset, nightDuration, false);
+
+            // Re-highlight current day
+            highlightCurrentDay();
+            
+            // Highlight current hour if set
+            highlightCurrentHour();
+        }
+
+        // Parse time string to minutes
+        function parseTime(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // Format minutes to time string
+        function formatTime(minutes) {
+            const hours = Math.floor(minutes / 60) % 24;
+            const mins = Math.floor(minutes % 60);
+            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+        }
+
+        // Generate hours table
+        function generateHoursTable(bodyId, startTime, hourDuration, isDaytime) {
+            const tbody = document.getElementById(bodyId);
+            tbody.innerHTML = '';
+
+            for (let hour = 0; hour < 12; hour++) {
+                const row = document.createElement('tr');
+                
+                // Hour number
+                const hourCell = document.createElement('td');
+                hourCell.className = 'hour-number';
+                hourCell.textContent = hour + 1;
+                row.appendChild(hourCell);
+
+                // For each day of the week
+                for (let day = 0; day < 7; day++) {
+                    const cell = document.createElement('td');
+                    
+                    // Calculate planet index
+                    const baseIndex = dayRulers[day];
+                    let planetIndex;
+                    
+                    if (isDaytime) {
+                        planetIndex = (baseIndex + hour) % 7;
+                    } else {
+                        // Night hours continue from where day hours left off
+                        planetIndex = (baseIndex + 12 + hour) % 7;
+                    }
+                    
+                    const planet = planets[planetIndex];
+                    
+                    // Calculate time
+                    const time = startTime + (hour * hourDuration);
+                    const timeString = formatTime(time);
+                    
+                    // Create planet cell content
+                    const planetCell = document.createElement('div');
+                    planetCell.className = 'planet-cell';
+                    
+                    const symbol = document.createElement('div');
+                    symbol.className = 'planet-symbol';
+                    symbol.textContent = planet.symbol;
+                    
+                    const name = document.createElement('div');
+                    name.className = 'planet-name';
+                    name.textContent = currentLanguage === 'ar' ? planet.name : planet.nameEn;
+                    
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'hour-time';
+                    timeDiv.textContent = timeString;
+                    
+                    planetCell.appendChild(symbol);
+                    planetCell.appendChild(name);
+                    planetCell.appendChild(timeDiv);
+                    
+                    cell.appendChild(planetCell);
+                    row.appendChild(cell);
+                }
+                
+                tbody.appendChild(row);
+            }
+        }
+
+        // Highlight current planetary hour
+        function highlightCurrentHour() {
+            const currentHourInput = document.getElementById('current-hour').value;
+            const sunriseInput = document.getElementById('sunrise').value;
+            const sunsetInput = document.getElementById('sunset').value;
+            
+            if (!currentHourInput || !sunriseInput || !sunsetInput) {
+                return;
+            }
+            
+            // Remove previous current hour highlights
+            document.querySelectorAll('.current-hour').forEach(cell => {
+                cell.classList.remove('current-hour');
+            });
+            
+            const currentTime = parseTime(currentHourInput);
+            const sunrise = parseTime(sunriseInput);
+            const sunset = parseTime(sunsetInput);
+            
+            const today = new Date().getDay();
+            let dayIndex;
+            switch(today) {
+                case 0: dayIndex = 1; break; // Sunday
+                case 1: dayIndex = 2; break; // Monday
+                case 2: dayIndex = 3; break; // Tuesday
+                case 3: dayIndex = 4; break; // Wednesday
+                case 4: dayIndex = 5; break; // Thursday
+                case 5: dayIndex = 6; break; // Friday
+                case 6: dayIndex = 0; break; // Saturday
+            }
+            
+            let targetTable, hourIndex;
+            
+            if (currentTime >= sunrise && currentTime < sunset) {
+                // Daytime hour
+                targetTable = 'day-table';
+                const dayDuration = (sunset - sunrise) / 12;
+                hourIndex = Math.floor((currentTime - sunrise) / dayDuration);
+                hourIndex = Math.min(hourIndex, 11); // Ensure it doesn't exceed 11
+            } else {
+                // Nighttime hour
+                targetTable = 'night-table';
+                const nightDuration = (24 * 60 - (sunset - sunrise)) / 12;
+                let timeFromSunset;
+                
+                if (currentTime >= sunset) {
+                    timeFromSunset = currentTime - sunset;
+                } else {
+                    // Past midnight
+                    timeFromSunset = (24 * 60 - sunset) + currentTime;
+                }
+                
+                hourIndex = Math.floor(timeFromSunset / nightDuration);
+                hourIndex = Math.min(hourIndex, 11); // Ensure it doesn't exceed 11
+            }
+            
+            // Highlight the specific cell
+            const table = document.getElementById(targetTable);
+            const rows = table.querySelectorAll('tbody tr');
+            
+            if (rows[hourIndex]) {
+                const cells = rows[hourIndex].querySelectorAll('td');
+                if (cells[dayIndex + 1]) { // +1 because first column is hour number
+                    cells[dayIndex + 1].classList.add('current-hour');
+                }
+            }
+        }
+
+        // Initialize the app when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
