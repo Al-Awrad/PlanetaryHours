@@ -405,6 +405,17 @@
             text-align: center;
         }
 
+        .widget-remaining-time {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: var(--highlight-bg);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
         /* Tooltip styles */
         .planet-cell {
             position: relative;
@@ -622,6 +633,8 @@
                 <input type="time" id="current-hour">
             </div>
             
+            <button class="btn" id="current-time-btn" onclick="setCurrentTime()" style="background-color: var(--highlight-bg);">🕐 الوقت الحالي</button>
+            
             <button class="btn" id="calculate-btn" onclick="calculateTimes()">حساب الأوقات</button>
             
             <button class="btn" id="auto-location-btn" onclick="getLocationAndTimes()" style="background-color: var(--highlight-bg);">📍 الموقع التلقائي</button>
@@ -690,6 +703,7 @@
             <div class="widget-planet-name" id="widget-planet">Calculating...</div>
             <div class="widget-time-range" id="widget-time">Please set times first</div>
             <div class="widget-period" id="widget-period">...</div>
+            <div class="widget-remaining-time" id="widget-remaining">...</div>
             <div class="widget-message" id="widget-message">...</div>
         </div>
         <div class="widget-controls">
@@ -765,12 +779,14 @@
                 sunset: 'وقت الغروب:',
                 currentHour: 'الساعة الحالية:',
                 calculate: 'حساب الأوقات',
+                currentTime: '🕐 الوقت الحالي',
                 autoLocation: '📍 الموقع التلقائي',
                 widgetHeader: 'الساعة الكوكبية الحالية',
                 calculating: 'جاري الحساب...',
                 setTimesFirst: 'يرجى تعيين الأوقات أولاً',
                 refresh: '🔄 تحديث',
                 close: '✕ إغلاق',
+                timeRemaining: 'متبقي للساعة التالية',
                 daytime: 'نهاري',
                 nighttime: 'ليلي',
                 dayHours: 'الأوقات النهارية',
@@ -786,12 +802,14 @@
                 sunset: 'Sunset Time:',
                 currentHour: 'Current Hour:',
                 calculate: 'Calculate Times',
+                currentTime: '🕐 Current Time',
                 autoLocation: '📍 Auto Location',
                 widgetHeader: 'Current Planetary Hour',
                 calculating: 'Calculating...',
                 setTimesFirst: 'Please set times first',
                 refresh: '🔄 Refresh',
                 close: '✕ Close',
+                timeRemaining: 'Until next hour',
                 daytime: 'Daytime',
                 nighttime: 'Nighttime',
                 dayHours: 'Daytime Hours',
@@ -809,19 +827,24 @@
         // Initialize the app
         function init() {
             updateCurrentDate();
-            setCurrentTime();
+            // Remove automatic setting of current time on init
             highlightCurrentDay();
             calculateTimes();
             // Set initial theme to Saturn
             applyTheme('saturn');
         }
 
-        // Set current time in the input field
+        // Set current time in the input field (now called manually)
         function setCurrentTime() {
             const now = new Date();
             const hours = now.getHours().toString().padStart(2, '0');
             const minutes = now.getMinutes().toString().padStart(2, '0');
             document.getElementById('current-hour').value = `${hours}:${minutes}`;
+            
+            // After setting time, update highlights and widget
+            highlightCurrentHour();
+            updateWidget();
+            setAutoTheme();
         }
 
         // Update current date display
@@ -868,6 +891,7 @@
             document.getElementById('sunset-label').textContent = translations[lang].sunset;
             document.getElementById('current-hour-label').textContent = translations[lang].currentHour;
             document.getElementById('calculate-btn').textContent = translations[lang].calculate;
+            document.getElementById('current-time-btn').textContent = translations[lang].currentTime;
             document.getElementById('auto-location-btn').textContent = translations[lang].autoLocation;
             
             // Update widget translations
@@ -1037,25 +1061,27 @@
             const calendarDate = new Date();
             let calendarDayIndex;
             
+            // Convert JavaScript day to our table index
             switch(calendarDate.getDay()) {
-                case 0: calendarDayIndex = 1; break; // Sunday
-                case 1: calendarDayIndex = 2; break; // Monday
-                case 2: calendarDayIndex = 3; break; // Tuesday
-                case 3: calendarDayIndex = 4; break; // Wednesday
-                case 4: calendarDayIndex = 5; break; // Thursday
-                case 5: calendarDayIndex = 6; break; // Friday
-                case 6: calendarDayIndex = 0; break; // Saturday
+                case 0: calendarDayIndex = 1; break; // Sunday -> index 1
+                case 1: calendarDayIndex = 2; break; // Monday -> index 2
+                case 2: calendarDayIndex = 3; break; // Tuesday -> index 3
+                case 3: calendarDayIndex = 4; break; // Wednesday -> index 4
+                case 4: calendarDayIndex = 5; break; // Thursday -> index 5
+                case 5: calendarDayIndex = 6; break; // Friday -> index 6
+                case 6: calendarDayIndex = 0; break; // Saturday -> index 0
             }
             
             if (currentTime >= sunrise && currentTime < sunset) {
                 // Daytime: use today's calendar day
                 return calendarDayIndex;
             } else if (currentTime >= sunset) {
-                // After sunset: still today's astronomical day
+                // After sunset: still today's astronomical day (same day continues into night)
                 return calendarDayIndex;
             } else {
-                // Before sunrise: yesterday's astronomical day
-                return (calendarDayIndex + 6) % 7; // Go back one day
+                // Before sunrise (past midnight): we're still in yesterday's astronomical day
+                // Go back one day in our table order
+                return (calendarDayIndex + 6) % 7;
             }
         }
 
@@ -1356,6 +1382,7 @@
                 document.getElementById('widget-planet').textContent = translations[currentLanguage].calculating;
                 document.getElementById('widget-time').textContent = translations[currentLanguage].setTimesFirst;
                 document.getElementById('widget-period').textContent = '...';
+                document.getElementById('widget-remaining').textContent = '...';
                 document.getElementById('widget-message').textContent = '...';
                 return;
             }
@@ -1416,11 +1443,30 @@
             const planet = planets[planetIndex];
             const endTime = startTime + duration;
             
+            // Calculate time remaining until NEXT planetary hour
+            const remainingMinutes = Math.max(0, endTime - currentTime);
+            const remainingHours = Math.floor(remainingMinutes / 60);
+            const remainingMins = Math.floor(remainingMinutes % 60);
+            
+            let remainingText;
+            if (remainingMinutes <= 0) {
+                remainingText = '0m';
+            } else if (remainingHours > 0) {
+                if (remainingMins > 0) {
+                    remainingText = `${remainingHours}h ${remainingMins}m`;
+                } else {
+                    remainingText = `${remainingHours}h`;
+                }
+            } else {
+                remainingText = `${remainingMins}m`;
+            }
+            
             // Update widget content
             document.getElementById('widget-symbol').textContent = planet.symbol;
             document.getElementById('widget-planet').textContent = currentLanguage === 'ar' ? planet.name : planet.nameEn;
             document.getElementById('widget-time').textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
             document.getElementById('widget-period').textContent = isDaytime ? translations[currentLanguage].daytime : translations[currentLanguage].nighttime;
+            document.getElementById('widget-remaining').textContent = `${translations[currentLanguage].timeRemaining}: ${remainingText}`;
             document.getElementById('widget-message').textContent = planet.message;
         }
 
@@ -1432,7 +1478,7 @@
             updateWidget();
         }
 
-        // Highlight current planetary hour
+        // FIXED: Highlight current planetary hour using astronomical day logic
         function highlightCurrentHour() {
             const currentHourInput = document.getElementById('current-hour').value;
             const sunriseInput = document.getElementById('sunrise').value;
@@ -1451,17 +1497,8 @@
             const sunrise = parseTime(sunriseInput);
             const sunset = parseTime(sunsetInput);
             
-            const today = new Date().getDay();
-            let dayIndex;
-            switch(today) {
-                case 0: dayIndex = 1; break; // Sunday
-                case 1: dayIndex = 2; break; // Monday
-                case 2: dayIndex = 3; break; // Tuesday
-                case 3: dayIndex = 4; break; // Wednesday
-                case 4: dayIndex = 5; break; // Thursday
-                case 5: dayIndex = 6; break; // Friday
-                case 6: dayIndex = 0; break; // Saturday
-            }
+            // Use the same astronomical day logic as everywhere else
+            const dayIndex = getAstronomicalDayIndex(currentTime, sunrise, sunset);
             
             let targetTable, hourIndex;
             
@@ -1486,14 +1523,9 @@
                 
                 hourIndex = Math.floor(timeFromSunset / nightDuration);
                 hourIndex = Math.min(hourIndex, 11); // Ensure it doesn't exceed 11
-                
-                // For night hours, the column index should match the night header
-                // Saturday night -> Sunday Night column (index 0 in night table)
-                // Sunday night -> Monday Night column (index 1 in night table)
-                // The dayIndex is already correct for this - no need to shift again
             }
             
-            // Highlight the specific cell
+            // Highlight the specific cell using the correct astronomical day index
             const table = document.getElementById(targetTable);
             const rows = table.querySelectorAll('tbody tr');
             
