@@ -405,17 +405,6 @@
             text-align: center;
         }
 
-        .widget-remaining-time {
-            margin-top: 10px;
-            padding: 8px 12px;
-            background-color: var(--highlight-bg);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            text-align: center;
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-
         /* Tooltip styles */
         .planet-cell {
             position: relative;
@@ -639,6 +628,8 @@
             
             <button class="btn" id="auto-location-btn" onclick="getLocationAndTimes()" style="background-color: var(--highlight-bg);">📍 الموقع التلقائي</button>
             
+            <button class="btn" id="time-format-btn" onclick="toggleTimeFormat()" style="background-color: var(--highlight-bg);">24h</button>
+            
             <div class="language-toggle">
                 <button id="lang-ar" class="active" onclick="setLanguage('ar')">العربية</button>
                 <button id="lang-en" onclick="setLanguage('en')">English</button>
@@ -703,7 +694,6 @@
             <div class="widget-planet-name" id="widget-planet">Calculating...</div>
             <div class="widget-time-range" id="widget-time">Please set times first</div>
             <div class="widget-period" id="widget-period">...</div>
-            <div class="widget-remaining-time" id="widget-remaining">...</div>
             <div class="widget-message" id="widget-message">...</div>
         </div>
         <div class="widget-controls">
@@ -781,12 +771,13 @@
                 calculate: 'حساب الأوقات',
                 currentTime: '🕐 الوقت الحالي',
                 autoLocation: '📍 الموقع التلقائي',
+                timeFormat24: '24h',
+                timeFormat12: '12h',
                 widgetHeader: 'الساعة الكوكبية الحالية',
                 calculating: 'جاري الحساب...',
                 setTimesFirst: 'يرجى تعيين الأوقات أولاً',
                 refresh: '🔄 تحديث',
                 close: '✕ إغلاق',
-                timeRemaining: 'متبقي للساعة التالية',
                 daytime: 'نهاري',
                 nighttime: 'ليلي',
                 dayHours: 'الأوقات النهارية',
@@ -804,12 +795,13 @@
                 calculate: 'Calculate Times',
                 currentTime: '🕐 Current Time',
                 autoLocation: '📍 Auto Location',
+                timeFormat24: '24h',
+                timeFormat12: '12h',
                 widgetHeader: 'Current Planetary Hour',
                 calculating: 'Calculating...',
                 setTimesFirst: 'Please set times first',
                 refresh: '🔄 Refresh',
                 close: '✕ Close',
-                timeRemaining: 'Until next hour',
                 daytime: 'Daytime',
                 nighttime: 'Nighttime',
                 dayHours: 'Daytime Hours',
@@ -823,6 +815,7 @@
         let currentLanguage = 'ar';
         let currentTheme = 'saturn'; // Default to Saturn theme
         let autoThemeEnabled = true; // Enable automatic theme switching
+        let is24HourFormat = true; // Default to 24-hour format
 
         // Initialize the app
         function init() {
@@ -893,6 +886,12 @@
             document.getElementById('calculate-btn').textContent = translations[lang].calculate;
             document.getElementById('current-time-btn').textContent = translations[lang].currentTime;
             document.getElementById('auto-location-btn').textContent = translations[lang].autoLocation;
+            
+            // Update time format button
+            const timeFormatBtn = document.getElementById('time-format-btn');
+            timeFormatBtn.textContent = is24HourFormat ? 
+                translations[lang].timeFormat24 : 
+                translations[lang].timeFormat12;
             
             // Update widget translations
             updateWidgetTranslations();
@@ -1166,11 +1165,34 @@
             return hours * 60 + minutes;
         }
 
-        // Format minutes to time string
+        // Format minutes to time string with 12/24 hour support
         function formatTime(minutes) {
-            const hours = Math.floor(minutes / 60) % 24;
+            const hours24 = Math.floor(minutes / 60) % 24;
             const mins = Math.floor(minutes % 60);
-            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+            
+            if (is24HourFormat) {
+                return `${hours24.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+            } else {
+                // 12-hour format
+                const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
+                const ampm = hours24 >= 12 ? 'PM' : 'AM';
+                return `${hours12}:${mins.toString().padStart(2, '0')} ${ampm}`;
+            }
+        }
+
+        // Toggle between 12/24 hour format
+        function toggleTimeFormat() {
+            is24HourFormat = !is24HourFormat;
+            
+            // Update button text
+            const btn = document.getElementById('time-format-btn');
+            btn.textContent = is24HourFormat ? 
+                translations[currentLanguage].timeFormat24 : 
+                translations[currentLanguage].timeFormat12;
+            
+            // Recalculate to update all displayed times
+            calculateTimes();
+            updateWidget();
         }
 
         // Generate hours table
@@ -1382,7 +1404,6 @@
                 document.getElementById('widget-planet').textContent = translations[currentLanguage].calculating;
                 document.getElementById('widget-time').textContent = translations[currentLanguage].setTimesFirst;
                 document.getElementById('widget-period').textContent = '...';
-                document.getElementById('widget-remaining').textContent = '...';
                 document.getElementById('widget-message').textContent = '...';
                 return;
             }
@@ -1443,30 +1464,11 @@
             const planet = planets[planetIndex];
             const endTime = startTime + duration;
             
-            // Calculate time remaining until NEXT planetary hour
-            const remainingMinutes = Math.max(0, endTime - currentTime);
-            const remainingHours = Math.floor(remainingMinutes / 60);
-            const remainingMins = Math.floor(remainingMinutes % 60);
-            
-            let remainingText;
-            if (remainingMinutes <= 0) {
-                remainingText = '0m';
-            } else if (remainingHours > 0) {
-                if (remainingMins > 0) {
-                    remainingText = `${remainingHours}h ${remainingMins}m`;
-                } else {
-                    remainingText = `${remainingHours}h`;
-                }
-            } else {
-                remainingText = `${remainingMins}m`;
-            }
-            
             // Update widget content
             document.getElementById('widget-symbol').textContent = planet.symbol;
             document.getElementById('widget-planet').textContent = currentLanguage === 'ar' ? planet.name : planet.nameEn;
             document.getElementById('widget-time').textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
             document.getElementById('widget-period').textContent = isDaytime ? translations[currentLanguage].daytime : translations[currentLanguage].nighttime;
-            document.getElementById('widget-remaining').textContent = `${translations[currentLanguage].timeRemaining}: ${remainingText}`;
             document.getElementById('widget-message').textContent = planet.message;
         }
 
